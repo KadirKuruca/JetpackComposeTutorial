@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">JetpackComposeTutorial</string>
+    <string name="happy_birthday_text">Happy Birthday Android</string>
+    <string name="from_text">- From Kadir</string>
 </resources>
