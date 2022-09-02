@@ -13,6 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,10 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    BirthdayGreetingWithImage(
-                        message = getString(R.string.happy_birthday_text),
-                        from = getString(R.string.from_text)
-                    )
+
                 }
             }
         }
@@ -39,47 +38,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BirthdayGreetingWithText(message: String, from: String){
-    Column{
-        Text(
-            text = message,
-            fontSize = 32.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .padding(top = 16.dp)
-        )
-        Text(
-            text = from,
-            fontSize = 24.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
-                .padding(start = 16.dp, end = 16.dp)
-        )
-    }
-}
-
-@Composable
-fun BirthdayGreetingWithImage(message: String, from: String){
-    val image = painterResource(id = R.drawable.android_party)
-    Box{
+fun ArticleScreen(){
+    val image = painterResource(id = R.drawable.bg_compose_background)
+    Column {
         Image(
             painter = image,
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.fillMaxWidth()
         )
-        BirthdayGreetingWithText(message = message, from = from)
+        Text(
+            text = stringResource(R.string.article_title_text),
+            fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.article_description_first_text),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            textAlign = TextAlign.Justify
+        )
+        Text(
+            text = stringResource(id = R.string.article_description_second_text),
+            modifier = Modifier.padding(16.dp),
+            textAlign = TextAlign.Justify
+        )
     }
 }
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun BirthdayCardPreview(){
+fun ArticlePreview(){
     JetpackComposeTutorialTheme{
-        BirthdayGreetingWithImage("Happy Birthday Android", "- From Kadir")
+        ArticleScreen()
     }
 }
