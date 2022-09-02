@@ -11,7 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
+                    TaskCompleteScreen()
                 }
             }
         }
@@ -38,28 +37,25 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ArticleScreen(){
-    val image = painterResource(id = R.drawable.bg_compose_background)
-    Column {
+fun TaskCompleteScreen(){
+    val image = painterResource(id = R.drawable.ic_task_completed)
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             painter = image,
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth()
+            contentDescription = null
         )
         Text(
-            text = stringResource(R.string.article_title_text),
+            text = stringResource(R.string.all_task_completed_text),
             fontSize = 24.sp,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
         )
         Text(
-            text = stringResource(id = R.string.article_description_first_text),
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-            textAlign = TextAlign.Justify
-        )
-        Text(
-            text = stringResource(id = R.string.article_description_second_text),
-            modifier = Modifier.padding(16.dp),
-            textAlign = TextAlign.Justify
+            text = stringResource(id = R.string.nice_work_text),
+            fontSize = 16.sp
         )
     }
 }
@@ -69,6 +65,6 @@ fun ArticleScreen(){
 @Composable
 fun ArticlePreview(){
     JetpackComposeTutorialTheme{
-        ArticleScreen()
+        TaskCompleteScreen()
     }
 }
