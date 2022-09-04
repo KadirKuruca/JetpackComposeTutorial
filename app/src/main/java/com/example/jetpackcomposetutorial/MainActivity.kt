@@ -6,17 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcomposetutorial.ui.theme.JetpackComposeTutorialTheme
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    BusinessCard()
+                    DiceRollerApp()
                 }
             }
         }
@@ -39,138 +38,35 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BusinessCard() {
+fun DiceWithButtonAndImage(modifier: Modifier){
+    var result by remember { mutableStateOf(1) }
+    val imageResource = when(result){
+        1 -> R.drawable.dice_1
+        2 -> R.drawable.dice_2
+        3 -> R.drawable.dice_3
+        4 -> R.drawable.dice_4
+        5 -> R.drawable.dice_5
+        6 -> R.drawable.dice_6
+        else -> {R.drawable.dice_1}
+    }
     Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(painter = painterResource(id = imageResource), contentDescription = result.toString())
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { result = (1..6).random() }) {
+            Text(text = stringResource(id = R.string.roll_text))
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun DiceRollerApp() {
+    DiceWithButtonAndImage(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF2e6362)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(Modifier.weight(1f))
-        LogoWithName()
-        Spacer(Modifier.weight(1f))
-        InformationCard()
-    }
-}
-
-@Composable
-fun LogoWithName() {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val logo = painterResource(id = R.drawable.android_logo)
-        Image(
-            painter = logo,
-            contentDescription = null,
-            modifier = Modifier
-                .height(100.dp)
-        )
-        Text(
-            text = "Kadir Kuruca",
-            fontSize = 40.sp,
-            color = Color.White
-        )
-        Text(
-            text = "Senior Android Developer",
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF3ddc84)
-        )
-    }
-}
-
-@Composable
-fun InformationCard() {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Divider(
-            color = Color.White
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            val phoneLogo = painterResource(id = R.drawable.phone)
-            Image(
-                painter = phoneLogo,
-                contentDescription = "phone_logo",
-                modifier = Modifier
-                    .padding(start = 40.dp, top = 8.dp, bottom = 8.dp)
-            )
-            Text(
-                text = "+90 542 890 29 79",
-                color = Color.White,
-                modifier = Modifier
-                    .padding(start = 32.dp, top = 8.dp, bottom = 8.dp)
-            )
-        }
-    }
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Divider(
-            color = Color.White
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            val phoneLogo = painterResource(id = R.drawable.share)
-            Image(
-                painter = phoneLogo,
-                contentDescription = "share_logo",
-                modifier = Modifier
-                    .padding(start = 40.dp, top = 8.dp, bottom = 8.dp)
-            )
-            Text(
-                text = "@KadirKuruca",
-                color = Color.White,
-                modifier = Modifier
-                    .padding(start = 32.dp, top = 8.dp, bottom = 8.dp)
-            )
-        }
-    }
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Divider(
-            color = Color.White
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 40.dp)
-        ) {
-            val phoneLogo = painterResource(id = R.drawable.email)
-            Image(
-                painter = phoneLogo,
-                contentDescription = "email_logo",
-                modifier = Modifier
-                    .padding(start = 40.dp, top = 8.dp, bottom = 8.dp)
-            )
-            Text(
-                text = "kadirkuruca@gmail.com",
-                color = Color.White,
-                modifier = Modifier
-                    .padding(start = 32.dp, top = 8.dp, bottom = 8.dp)
-            )
-        }
-    }
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ArticlePreview() {
-    JetpackComposeTutorialTheme {
-        BusinessCard()
-    }
+            .wrapContentSize(Alignment.Center)
+    )
 }
