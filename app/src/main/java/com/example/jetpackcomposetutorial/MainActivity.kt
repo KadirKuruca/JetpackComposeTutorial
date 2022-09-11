@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,7 +46,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun calculateTip(
+@VisibleForTesting
+internal fun calculateTip(
     amount: Double,
     tipPercent: Double = 15.0,
     roundUp: Boolean
@@ -87,6 +90,7 @@ fun TipCalculatorPage() {
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
             ),
+            testTag = "tf_bill_amount",
             onValueChange = { amountInput = it }
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -100,6 +104,7 @@ fun TipCalculatorPage() {
             keyboardActions = KeyboardActions(
                 onDone = {focusManager.clearFocus()}
             ),
+            testTag = "tf_tip_amount",
             onValueChange = { tipInput = it }
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -108,7 +113,8 @@ fun TipCalculatorPage() {
         Text(
             text = stringResource(id = R.string.tip_amount, tip),
             fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.testTag("text_tip_amount_result")
         )
     }
 }
@@ -143,13 +149,16 @@ fun EditNumberField(
     value: String,
     keyboardOptions: KeyboardOptions,
     keyboardActions: KeyboardActions,
+    testTag: String,
     onValueChange: (String) -> Unit
 ) {
     TextField(
         value = value,
         label = { Text(text = stringResource(id = label)) },
         singleLine = true,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(testTag),
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         onValueChange = onValueChange,
