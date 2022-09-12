@@ -3,31 +3,25 @@ package com.example.jetpackcomposetutorial
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.StringRes
-import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jetpackcomposetutorial.data.ImageDescriptionClass
 import com.example.jetpackcomposetutorial.ui.theme.JetpackComposeTutorialTheme
-import java.text.NumberFormat
-import kotlin.math.round
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,134 +33,193 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    TipCalculatorApp()
+                    ArtSpaceApp()
                 }
             }
         }
     }
 }
 
-@VisibleForTesting
-internal fun calculateTip(
-    amount: Double,
-    tipPercent: Double = 15.0,
-    roundUp: Boolean
-): String{
-    var tip = tipPercent / 100 * amount
-    if(roundUp)
-        tip = kotlin.math.ceil(tip)
-    return NumberFormat.getCurrencyInstance().format(tip)
+@Composable
+fun ArtSpacePage() {
+    val list = prepareList()
+    var imageIndex by remember { mutableStateOf(0) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(10.dp))
+        Image(
+            painter = painterResource(id = list[imageIndex].image),
+            contentDescription = stringResource(id = list[imageIndex].contentDescription),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .border(2.dp, color = Color.DarkGray)
+                .padding(20.dp)
+                .weight(1f)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        TextDescriptionForImage(
+            descriptionTitle = list[imageIndex].title,
+            descriptionAuthor = list[imageIndex].author
+        )
+        Spacer(modifier = Modifier.height(40.dp))
+        NavigatorButtons(
+            previousOnClick = {
+                if(imageIndex > 0)
+                    imageIndex--
+            },
+            nextOnClick = {
+                if(imageIndex < 9)
+                    imageIndex++
+            }
+        )
+    }
 }
 
 @Composable
-fun TipCalculatorPage() {
-    val focusManager = LocalFocusManager.current
-    var amountInput by remember { mutableStateOf("") }
-    var tipInput by remember { mutableStateOf("") }
-    var roundUp by remember { mutableStateOf(false) }
-
-    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
-    val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount, tipPercent, roundUp)
+fun TextDescriptionForImage(descriptionTitle: Int, descriptionAuthor: Int){
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
+            .shadow(2.dp, clip = true)
+            .padding(10.dp)
     ) {
         Text(
-            text = stringResource(R.string.calculate_tip),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Normal
+            text = stringResource(id = descriptionTitle),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Light
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        EditNumberField(
-            label = R.string.bill_amount,
-            value = amountInput,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)}
-            ),
-            testTag = "tf_bill_amount",
-            onValueChange = { amountInput = it }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        EditNumberField(
-            label = R.string.tip_percentage,
-            value = tipInput,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {focusManager.clearFocus()}
-            ),
-            testTag = "tf_tip_amount",
-            onValueChange = { tipInput = it }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        RoundTheTipRow(roundUp, onRoundUpChange = { roundUp = it })
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(id = R.string.tip_amount, tip),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.testTag("text_tip_amount_result")
-        )
-    }
-}
-
-@Composable
-fun RoundTheTipRow(
-    roundUp: Boolean, onRoundUpChange: (Boolean) -> Unit
-){
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        Text(
-            text = stringResource(id = R.string.round_up_tip),
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-        )
-        Switch(
-            checked = roundUp,
-            onCheckedChange = onRoundUpChange,
-            colors = SwitchDefaults.colors(
-                uncheckedThumbColor = Color.DarkGray
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround
+        ){
+            Text(
+                text = stringResource(id = descriptionAuthor),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
-        )
+            Text(
+                text = "2022",
+                fontSize = 16.sp,
+            )
+        }
     }
 }
 
 @Composable
-fun EditNumberField(
-    @StringRes label: Int,
-    value: String,
-    keyboardOptions: KeyboardOptions,
-    keyboardActions: KeyboardActions,
-    testTag: String,
-    onValueChange: (String) -> Unit
-) {
-    TextField(
-        value = value,
-        label = { Text(text = stringResource(id = label)) },
-        singleLine = true,
+fun NavigatorButtons(previousOnClick: () -> Unit, nextOnClick: () -> Unit){
+    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .testTag(testTag),
-        keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
-        onValueChange = onValueChange,
-    )
+            .padding(10.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Button(
+            onClick = previousOnClick,
+            modifier = Modifier.width(120.dp)
+        ){
+            Text(text = stringResource(R.string.previous_text))
+        }
+        Button(
+            onClick = nextOnClick,
+            modifier = Modifier.width(120.dp)
+        ){
+            Text(text = stringResource(R.string.next_text))
+        }
+    }
 }
+
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun TipCalculatorApp() {
-    TipCalculatorPage()
+fun ArtSpaceApp() {
+    ArtSpacePage()
+}
+
+fun prepareList() : ArrayList<ImageDescriptionClass>{
+    val imageDescriptionList = ArrayList<ImageDescriptionClass>()
+    val imageDescription1 = ImageDescriptionClass(
+        id = 1,
+        title = R.string.nature_image_title_1,
+        author = R.string.nature_image_author_1,
+        contentDescription = R.string.nature_image_content_description_1,
+        image = R.drawable.nature_1
+    )
+    val imageDescription2 = ImageDescriptionClass(
+        id = 2,
+        title = R.string.nature_image_title_2,
+        author = R.string.nature_image_author_2,
+        contentDescription = R.string.nature_image_content_description_2,
+        image = R.drawable.nature_2
+    )
+    val imageDescription3 = ImageDescriptionClass(
+        id = 3,
+        title = R.string.nature_image_title_3,
+        author = R.string.nature_image_author_3,
+        contentDescription = R.string.nature_image_content_description_3,
+        image = R.drawable.nature_3
+    )
+    val imageDescription4 = ImageDescriptionClass(
+        id = 4,
+        title = R.string.nature_image_title_4,
+        author = R.string.nature_image_author_4,
+        contentDescription = R.string.nature_image_content_description_4,
+        image = R.drawable.nature_4
+    )
+    val imageDescription5 = ImageDescriptionClass(
+        id = 5,
+        title = R.string.nature_image_title_5,
+        author = R.string.nature_image_author_5,
+        contentDescription = R.string.nature_image_content_description_5,
+        image = R.drawable.nature_5
+    )
+    val imageDescription6 = ImageDescriptionClass(
+        id = 6,
+        title = R.string.nature_image_title_6,
+        author = R.string.nature_image_author_6,
+        contentDescription = R.string.nature_image_content_description_6,
+        image = R.drawable.nature_6
+    )
+    val imageDescription7 = ImageDescriptionClass(
+        id = 7,
+        title = R.string.nature_image_title_7,
+        author = R.string.nature_image_author_7,
+        contentDescription = R.string.nature_image_content_description_7,
+        image = R.drawable.nature_7
+    )
+    val imageDescription8 = ImageDescriptionClass(
+        id = 8,
+        title = R.string.nature_image_title_8,
+        author = R.string.nature_image_author_8,
+        contentDescription = R.string.nature_image_content_description_8,
+        image = R.drawable.nature_8
+    )
+    val imageDescription9 = ImageDescriptionClass(
+        id = 9,
+        title = R.string.nature_image_title_9,
+        author = R.string.nature_image_author_9,
+        contentDescription = R.string.nature_image_content_description_9,
+        image = R.drawable.nature_9
+    )
+    val imageDescription10 = ImageDescriptionClass(
+        id = 10,
+        title = R.string.nature_image_title_10,
+        author = R.string.nature_image_author_10,
+        contentDescription = R.string.nature_image_content_description_10,
+        image = R.drawable.nature_10
+    )
+
+    imageDescriptionList.add(imageDescription1)
+    imageDescriptionList.add(imageDescription2)
+    imageDescriptionList.add(imageDescription3)
+    imageDescriptionList.add(imageDescription4)
+    imageDescriptionList.add(imageDescription5)
+    imageDescriptionList.add(imageDescription6)
+    imageDescriptionList.add(imageDescription7)
+    imageDescriptionList.add(imageDescription8)
+    imageDescriptionList.add(imageDescription9)
+    imageDescriptionList.add(imageDescription10)
+    return imageDescriptionList
 }
